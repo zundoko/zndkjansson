@@ -5,6 +5,9 @@
  * @note     ** Jansson — C library for working with JSON data
  *           http://www.digip.org/jansson/
  *
+ * @note     Usage:
+ *            $ ./zndkjansson [FILE(.json)]
+ *
  * @date     2016-12-23
  * @author   zundoko
  */
@@ -30,6 +33,10 @@ main(int argc, char *argv[])
     char         *filepath = "./zndkjansson.json";
     json_t       *obj;
     json_error_t  err;
+
+    if (argc > 1) {
+        filepath = argv[1];
+    }
 
     obj = json_load_file(filepath, 0, &err);
     if (obj == NULL) {
@@ -91,6 +98,20 @@ main(int argc, char *argv[])
 
         if (json_is_null(spouse  ) == 0) printf(" spouse   is not null\n");
         else                             printf(" spouse   is     null\n");
+    }
+
+    /* copy to an other file */
+    {
+        size_t   flags = 0;
+        flags |= JSON_INDENT(4);          /* 4:with four spaces, n:0-31(JSON_MAX_INDENT) */
+//        flags |= JSON_COMPACT;            /* ", " -> ",", ": " -> ":" (no space)         */
+//        flags |= JSON_ENSURE_ASCII;       /*  */
+//        flags |= JSON_SORT_KEYS;          /* sort by key                                 */
+        flags |= JSON_PRESERVE_ORDER;     /* keep key order                              */
+//        flags |= JSON_ENCODE_ANY;         /* w/o RFC 4627                                */
+//        flags |= JSON_ESCAPE_SLASH;       /* "/" -> "\/"                                 */
+//        flags |= JSON_REAL_PRECISION(31); /* 31:31 digits of precision, n:0-31           */
+        json_dump_file(obj, "./export.json", flags);
     }
 
     json_decref(obj);           /* destroys json obj */
